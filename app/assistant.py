@@ -55,27 +55,27 @@ def store_thread(server_id, thread_id):
 # --------------------------------------------------------------
 # Generate response
 # --------------------------------------------------------------
-def generate_response(message_body, server_id, server_name):
+def generate_response(message_body, server_id, user_name):
     # Check if there is already a thread_id for the server_id
     thread_id = check_if_thread_exists(server_id)
 
     # If a thread doesn't exist, create one and store it
     if thread_id is None:
-        print(f"Creating new thread for {server_name} with server_id {server_id}")
+        print(f"Creating new thread for {user_name} with server_id {server_id}")
         thread = client.beta.threads.create()
         store_thread(server_id, thread.id)
         thread_id = thread.id
 
     # Otherwise, retrieve the existing thread
     else:
-        print(f"Retrieving existing thread for {server_name} with server_id {server_id}")
+        print(f"Retrieving existing thread for {user_name} with server_id {server_id}")
         thread = client.beta.threads.retrieve(thread_id)
 
     # Add message to thread
     message = client.beta.threads.messages.create(
         thread_id=thread_id,
         role="user",
-        content=message_body,
+        content=f"{user_name}: {message_body}",
     )
 
     # Run the assistant and get the new message
